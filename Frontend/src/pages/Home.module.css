@@ -1,0 +1,87 @@
+/* 🌟 Smooth scroll for nav anchors */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ✨ Floating animation for buttons */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+button:hover {
+  animation: float 1.2s ease-in-out infinite;
+}
+
+/* 💫 Soft fade-in animation for sections */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+section {
+  animation: fadeUp 0.9s ease-out;
+}
+
+/* 🪶 Smooth image zoom effect */
+img {
+  transition: transform 0.7s ease, filter 0.3s ease;
+}
+
+img:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* 🌈 Navbar shadow and glass effect */
+nav {
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+nav.scrolled {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+/* 🪩 Hero Text Glow */
+h1 span {
+  text-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+}
+
+/* 🌤️ Gradient overlay animation for hero image */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-gradient {
+  background: linear-gradient(-45deg, #0b1b3f, #c69c30, #1f2937, #facc15);
+  background-size: 400% 400%;
+  animation: gradientMove 12s ease infinite;
+}
+
+/* 🌟 Footer hover link animation */
+footer a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: #fbbf24;
+  transition: all 0.3s ease;
+}
