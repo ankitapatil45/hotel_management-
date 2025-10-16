@@ -1,39 +1,34 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get("http://localhost:8000/api/accounts/protected/", {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("access_token"),
-          },
-        });
-        setMessage(res.data.message);
-      } catch (err) {
-        navigate("/"); // token invalid -> redirect login
-      }
-    };
-    fetchData();
-  }, [navigate]);
-
   const handleLogout = () => {
+    // JWT tokens काढून टाका
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    navigate("/");
+    navigate("/login"); // लॉगिन पेजवर redirect
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Dashboard</h2>
-      <p>{message}</p>
-      <button onClick={handleLogout}>Logout</button>
+    <div style={{ textAlign: "center", marginTop: "60px" }}>
+      <h1>Welcome, Admin 👋</h1>
+      <p>You are successfully logged in!</p>
+      <button
+        onClick={handleLogout}
+        style={{
+          marginTop: "20px",
+          padding: "10px 20px",
+          backgroundColor: "#007bff",
+          border: "none",
+          color: "white",
+          borderRadius: "8px",
+          cursor: "pointer",
+        }}
+      >
+        Logout
+      </button>
     </div>
   );
 }

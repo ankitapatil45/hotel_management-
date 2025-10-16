@@ -31,18 +31,24 @@ class Room(models.Model):
         return f"{self.room_number} - {self.room_type}"
 
 
+from django.db import models
+
 class Booking(models.Model):
-    STATUS_CHOICES = (("pending","Pending"), ("confirmed","Confirmed"), ("cancelled","Cancelled"))
-    user = models.ForeignKey("hotel.User", on_delete=models.CASCADE, related_name="bookings")
-    room = models.ForeignKey("hotel.Room", on_delete=models.CASCADE, related_name="bookings")
-    date_from = models.DateField()
-    date_to = models.DateField()
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    booking_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
-    payment_status = models.CharField(max_length=20, default="pending")
+    name = models.CharField(max_length=100, default="John Doe")
+    email = models.EmailField(default="example@example.com")
+    phone = models.CharField(max_length=15, default="9999999999")
+
+    check_in = models.DateField()
+    check_out = models.DateField()
+    guests = models.IntegerField(default=1)
+    room_type = models.CharField(max_length=50, default="Standard")
+
+    #total_amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)  # ✅ Add this
+    
 
     def __str__(self):
-        return f"Booking {self.id} by {self.user}"
+        return f"{self.name} - {self.room_type}"
+
 
 
 class Payment(models.Model):
