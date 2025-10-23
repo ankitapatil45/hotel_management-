@@ -10,8 +10,10 @@ import BookingForm from "./components/BookingForm";
 import AboutUs from "./components/AboutUs";
 import Footer from "./components/Footer";
 import Login from "./components/Login"; // ✅ Login component import
-import Dashboard from "./components/Dashboard"; // ✅ Dashboard import
+import Dashboard from "./components/Dashboard"; // ✅ Dashboard 
 import ProtectedRoute from "./components/ProtectedRoute"; // ✅ Protected route import
+
+import ManageHotelData from "./pages/ManageHotelData";
 
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
 
         {/* Login page */}
         <Route path="/login" element={<Login />} />
+        <Route path="/admin/hotels" element={<ManageHotelData />} />
 
         {/* Protected Dashboard */}
         <Route

@@ -30,13 +30,50 @@ export default function BookingForm() {
         room_type: formData.roomType,
       };
 
+      // Step 1: Save booking in backend
       await axios.post(
         "http://localhost:8000/api/save-booking/",
         bookingData,
         { headers: { "Content-Type": "application/json" } }
       );
 
-      alert("Booking confirmed!");
+      // Step 2: Create Razorpay Order (उदा. ₹2000)
+      const orderRes = await axios.post("http://localhost:8000/api/create-order/", {
+        amount: 2000, // Fixed amount — तू नंतर dynamic करू शकतोस
+      });
+
+      const { id: order_id, amount, currency } = orderRes.data;
+
+      // Step 3: Razorpay Payment Options
+      const options = {
+        key: "YOUR_RAZORPAY_KEY_ID", // settings.py मधला Razorpay key वापर
+        amount: amount,
+        currency: currency,
+        name: "QuickStay",
+        description: "Room Booking Payment",
+        order_id: order_id,
+        handler: async function (response) {
+          // Step 4: Verify payment backend वर
+          try {
+            await axios.post("http://localhost:8000/api/verify-payment/", response);
+            alert("Payment successful! ✅ Booking confirmed.");
+          } catch (err) {
+            console.error("Payment verification error:", err);
+            alert("Payment verification failed. Please contact support.");
+          }
+        },
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: {
+          color: "#007BFF",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
       console.error("Booking save error:", err);
       alert("Booking failed. Please contact support.");
@@ -105,7 +142,7 @@ export default function BookingForm() {
             onChange={handleChange}
             required
           >
-            <option value="">-- Select Room Type --</option> {/* 👈 Add this line */}
+            <option value="">-- Select Room Type --</option>
             <option value="Standard">Standard</option>
             <option value="Deluxe">Deluxe</option>
             <option value="Suite">Suite</option>

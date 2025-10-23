@@ -1,3 +1,5 @@
+from django.conf import settings
+import razorpay
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -110,3 +112,60 @@ def save_booking(request):
     except Exception as e:
         print("❌ Exception:", str(e))
         return Response({"error": str(e)}, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_all_bookings(request):
+    bookings = Booking.objects.all().order_by('-id')  # latest first
+    serializer = BookingSerializer(bookings, many=True)
+    return Response(serializer.data)
+
+
+
+razorpay_client = razorpay.Client(
+    auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+)
+
+@api_view(["POST"])
+def save_booking(request):
+    serializer = BookingSerializer(data=request.data)
+    if serializer.is_valid():
+        booking = serializer.save()
+        return Response({"booking_id": booking.id}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def create_order(request):
+    """
+    Create Razorpay order
+    """
+    amount = int(request.data.get("amount", 0)) * 100  # ₹ मध्ये amount, Razorpay साठी पैसे *100
+    currency = "INR"
+
+    order = razorpay_client.order.create({
+        "amount": amount,
+        "currency": currency,
+        "payment_capture": "1"
+    })
+    return Response(order, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def verify_payment(request):
+    """
+    Verify Razorpay signature (optional but recommended)
+    """
+    data = request.data
+    params_dict = {
+        "razorpay_order_id": data.get("razorpay_order_id"),
+        "razorpay_payment_id": data.get("razorpay_payment_id"),
+        "razorpay_signature": data.get("razorpay_signature"),
+    }
+
+    try:
+        razorpay_client.utility.verify_payment_signature(params_dict)
+        return Response({"status": "Payment verified successfully!"}, status=status.HTTP_200_OK)
+    except:
+        return Response({"status": "Payment verification failed"}, status=status.HTTP_400_BAD_REQUEST)
